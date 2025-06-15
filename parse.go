@@ -1,5 +1,7 @@
 package rgx
 
+import "fmt"
+
 type tokenType uint8
 
 const (
@@ -71,4 +73,36 @@ func parseGroup(regex string, ctx *parseContext) {
 		process(regex, ctx)
 		ctx.pos += 1
 	}
+}
+
+func parseBracket(regex string, ctx *parseContext) {
+	ctx.pos++ // get past the left bracket
+	var literals []string
+	for regex[ctx.pos] != ']' {
+		ch := regex[ctx.pos]
+
+		if ch == '-' {
+			next := regex[ctx.pos+1]
+			prev := literals[len(literals)-1][0]
+			literals[len(literals)-1] = fmt.Sprintf("%c%c", prev, next)
+			ctx.pos++
+		} else {
+			literals = append(literals, fmt.Sprintf("%c", ch))
+		}
+
+		ctx.pos++
+	}
+
+	literalsSet := map[uint8]bool{}
+
+	for _, l := range literals {
+		for i := l[0]; i <= l[len(l)-1]; i++ {
+			literalsSet[i] = true
+		}
+	}
+
+	ctx.tokens = append(ctx.tokens, token{
+		tokenType: bracket,
+		value:     literalsSet,
+	})
 }
