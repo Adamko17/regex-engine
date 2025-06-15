@@ -20,3 +20,16 @@ type parseContext struct {
 	pos    int
 	tokens []token
 }
+
+func parse(regex string) *parseContext {
+	ctx := &parseContext{
+		pos:    0,
+		tokens: []token{},
+	}
+	for ctx.pos < len(regex) {
+		process(regex, ctx)
+		ctx.pos++
+	}
+
+	return ctx
+}
