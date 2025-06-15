@@ -63,5 +63,12 @@ func process(regex string, ctx *parseContext) {
 
 		ctx.tokens = append(ctx.tokens, t)
 	}
+}
 
+func parseGroup(regex string, ctx *parseContext) {
+	ctx.pos += 1 // get past the left parenthesis
+	for regex[ctx.pos] != ')' {
+		process(regex, ctx)
+		ctx.pos += 1
+	}
 }
