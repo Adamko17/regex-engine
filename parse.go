@@ -106,3 +106,32 @@ func parseBracket(regex string, ctx *parseContext) {
 		value:     literalsSet,
 	})
 }
+
+func parseOr(regex string, ctx *parseContext) {
+	rhsContext := &parseContext{
+		pos:    ctx.pos,
+		tokens: []token{},
+	}
+	rhsContext.pos += 1 // get past the |
+	for rhsContext.pos < len(regex) && regex[rhsContext.pos] != ')' {
+		process(regex, rhsContext)
+		rhsContext.pos += 1
+	}
+
+	// both sides of the |
+	left := token{
+		tokenType: groupUncaptured,
+		value:     ctx.tokens,
+	}
+
+	right := token{
+		tokenType: groupUncaptured,
+		value:     rhsContext.tokens,
+	}
+	ctx.pos = rhsContext.pos
+
+	ctx.tokens = []token{{
+		tokenType: or,
+		value:     []token{left, right},
+	}}
+}
