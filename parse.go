@@ -33,3 +33,35 @@ func parse(regex string) *parseContext {
 
 	return ctx
 }
+
+func process(regex string, ctx *parseContext) {
+	ch := regex[ctx.pos]
+	if ch == '(' {
+		groupCtx := &parseContext{
+			pos:    ctx.pos,
+			tokens: []token{},
+		}
+		parseGroup(regex, groupCtx)
+		ctx.tokens = append(ctx.tokens, token{
+			tokenType: group,
+			value:     groupCtx.tokens,
+		})
+	} else if ch == '[' {
+		parseBracket(regex, ctx)
+	} else if ch == '|' {
+		parseOr(regex, ctx)
+	} else if ch == '*' || ch == '?' || ch == '+' {
+		parseRepeat(regex, ctx)
+	} else if ch == '{' {
+		parseRepeatSpecified(regex, ctx)
+	} else {
+		// literal
+		t := token{
+			tokenType: literal,
+			value:     ch,
+		}
+
+		ctx.tokens = append(ctx.tokens, t)
+	}
+
+}
