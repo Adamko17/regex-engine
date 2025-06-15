@@ -23,6 +23,12 @@ type parseContext struct {
 	tokens []token
 }
 
+type repeatPayLoad struct {
+	min    int
+	max    int
+	value  token
+}
+
 func parse(regex string) *parseContext {
 	ctx := &parseContext{
 		pos:    0,
@@ -134,4 +140,34 @@ func parseOr(regex string, ctx *parseContext) {
 		tokenType: or,
 		value:     []token{left, right},
 	}}
+}
+
+const repeatInfinity = -1
+
+func parseRepeat(regex string, ctx *parseContext) {
+	ch := regex[ctx.pos]
+	var min, max int
+	if ch == '*' {
+		// any number of times including zero
+		min = 0
+		max = repeatInfinity
+	} else if ch == '?' {
+		// zero or one time
+		min = 0
+		max = 1
+	} else {
+		// ch == '+' any number of times but at least once
+		min = 1
+		max = repeatInfinity
+	}
+	
+	lastToken := ctx.tokens[len(ctx.tokens)-1]
+	ctx.tokens[len(ctx.tokens)-1] = token{
+		tokenType: repeat,
+		value:     repeatPayLoad{
+			min:   min,
+			max:   max,
+			value: lastToken,
+		},
+	}
 }
