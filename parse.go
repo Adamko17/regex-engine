@@ -1,6 +1,10 @@
 package rgx
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type tokenType uint8
 
@@ -168,6 +172,51 @@ func parseRepeat(regex string, ctx *parseContext) {
 			min:   min,
 			max:   max,
 			value: lastToken,
+		},
+	}
+}
+
+func parseRepeatSpecified(regex string, ctx *parseContext) {
+	start := ctx.pos + 1 // skip the left curly brace
+	for regex[ctx.pos] != '}' {
+		ctx.pos++
+	}
+
+	boundariesStr  := regex[start:ctx.pos]
+	pieces := strings.Split(boundariesStr , ",")
+	var min, max int
+	if len(pieces) == 1 {
+		if value, err := strconv.Atoi(pieces[0]); err != nil {
+			panic(err.Error())
+		} else {
+			min = value
+			max = value
+		}
+	} else if len(pieces) == 2 {
+		if value, err := strconv.Atoi(pieces[0]); err != nil {
+			panic(err.Error())
+	    } else {
+			min = value
+		}
+
+		if pieces[1] == "" {
+			max = repeatInfinity
+		} else if value, err := strconv.Atoi(pieces[0]); err != nil {
+			panic(err.Error())
+		} else {
+			max = value
+		}
+	} else { 
+		panic(fmt.Sprintf("There must be either 1 or 2 values specified for the quantifier: provided '%s'", boundariesStr))
+	}
+
+	lastToken := ctx.tokens[len(ctx.tokens)-1]
+	ctx.tokens[len(ctx.tokens)-1] = token{
+		tokenType: repeat,
+		value: repeatPayLoad{
+			min:   min,
+			max:   max,
+			value: lastToken,	
 		},
 	}
 }
