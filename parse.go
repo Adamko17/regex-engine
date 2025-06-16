@@ -148,6 +148,7 @@ func parseOr(regex string, ctx *parseContext) {
 
 const repeatInfinity = -1
 
+// a+
 func parseRepeat(regex string, ctx *parseContext) {
 	ch := regex[ctx.pos]
 	var min, max int
@@ -176,6 +177,7 @@ func parseRepeat(regex string, ctx *parseContext) {
 	}
 }
 
+// a{x,y}
 func parseRepeatSpecified(regex string, ctx *parseContext) {
 	start := ctx.pos + 1 // skip the left curly brace
 	for regex[ctx.pos] != '}' {
