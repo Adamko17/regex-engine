@@ -38,3 +38,25 @@ func toNfa(ctx *parseContext) *state {
 
 	return start
 }
+
+// returns (start, end)
+func tokenToNfa(t *token) (*state, *state) {
+	start := &state{
+		transitions: map[uint8][]*state{},
+	}
+	end := &state{
+		transitions: map[uint8][]*state{},
+	}
+
+	switch t.tokenType {
+	case literal:
+	case or:
+	case bracket:
+	case group, groupUncaptured:
+	case repeat:
+	default:
+		panic("unknown type of token")
+	}
+
+	return start, end
+}
