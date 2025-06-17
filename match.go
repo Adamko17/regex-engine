@@ -16,3 +16,30 @@ func getChar(input string, pos int) uint8 {
 
 	return input[pos]
 }
+
+func (s *state) check(input string, pos int) bool {
+	ch := getChar(input, pos)
+
+	if ch == endOfText && s.terminal {
+		return true
+	}
+
+	if states := s.transitions[ch]; len(states) > 0 {
+		nextState := states[0]
+		if nextState.check(input, pos+1) {
+			return true
+		}
+	}
+
+	for _, state := range s.transitions[epsilonChar] {
+		if state.check(input, pos) {
+			return true
+		}
+
+		if ch == startOfText && state.check(input, pos+1) {
+			return true
+		}
+	}
+
+	return false
+}
