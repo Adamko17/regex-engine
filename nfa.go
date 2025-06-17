@@ -64,6 +64,12 @@ func tokenToNfa(t *token) (*state, *state) {
 		e1.transitions[epsilonChar] = []*state{end}
 		e2.transitions[epsilonChar] = []*state{end}
 	case bracket:
+		literals := t.value.(map[uint8]bool)
+
+		// transitions from start to end state
+		for l := range literals {
+			start.transitions[l] = []*state{end}
+		}
 	case group, groupUncaptured:
 	case repeat:
 	default:
