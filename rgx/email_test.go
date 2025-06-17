@@ -60,12 +60,12 @@ func TestNfa(t *testing.T) {
         {email: "user@sub.domain.c0m", validity: false},
     }
 
-    ctx := parse("[a-zA-Z][a-zA-Z0-9_.]+@[a-zA-Z0-9]+.[a-zA-Z]{2,}")
-    nfa := toNfa(ctx)
+    ctx := Parse("[a-zA-Z][a-zA-Z0-9_.]+@[a-zA-Z0-9]+.[a-zA-Z]{2,}")
+    nfa := ToNfa(ctx)
 
     for _, instance := range data {
         t.Run(fmt.Sprintf("Test: '%s'", instance.email), func(t *testing.T) {
-            result := nfa.check(instance.email, -1)
+            result := nfa.Check(instance.email, -1)
             if result != instance.validity {
                 t.Logf("Expected: %t, got: %t\n", instance.validity, result)
                 t.Fail()

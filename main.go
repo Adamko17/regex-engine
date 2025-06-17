@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"./rgx"
+	"github.com/Adamko17/regex-engine/rgx"
 )
 
 func main() {

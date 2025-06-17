@@ -33,7 +33,7 @@ type repeatPayLoad struct {
 	value  token
 }
 
-func parse(regex string) *parseContext {
+func Parse(regex string) *parseContext {
 	ctx := &parseContext{
 		pos:    0,
 		tokens: []token{},

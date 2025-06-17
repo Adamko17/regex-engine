@@ -8,7 +8,7 @@ type state struct {
 
 const epsilonChar uint8 = 0 // empty char
 
-func toNfa(ctx *parseContext) *state {
+func ToNfa(ctx *parseContext) *state {
 	startState, endState := tokenToNfa(&ctx.tokens[0])
 
 	for i := 1; i < len(ctx.tokens); i++ {
