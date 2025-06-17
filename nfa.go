@@ -82,6 +82,61 @@ func tokenToNfa(t *token) (*state, *state) {
 			end = te
 		}
 	case repeat:
+		p := t.value.(repeatPayLoad)
+
+		if p.min == 0 {
+			start.transitions[epsilonChar] = []*state{end}
+		}
+
+		var copyCount int
+
+		if p.max == repeatInfinity {
+			if p.min == 0 {
+				copyCount = 1
+			} else {
+				copyCount = p.min
+			}
+		} else {
+			copyCount = p.max
+		}
+
+		from, to := tokenToNfa(&p.value)
+		start.transitions[epsilonChar] = append(
+			start.transitions[epsilonChar],
+			from,
+		)
+
+		for i := 2; i <= copyCount; i++ {
+			s, e := tokenToNfa(&p.value)
+
+			to.transitions[epsilonChar] = append(
+				to.transitions[epsilonChar],
+				s,
+			)
+
+			from = s
+			to = e
+
+			if i > p.min {
+				s.transitions[epsilonChar] = append(
+					s.transitions[epsilonChar],
+					end,
+				)
+			}
+		}
+
+		to.transitions[epsilonChar] = append(
+			to.transitions[epsilonChar],
+			end,
+		)
+
+		if p.max == repeatInfinity {
+			end.transitions[epsilonChar] = append(
+				end.transitions[epsilonChar],
+				from,
+			)
+		}
+
 	default:
 		panic("unknown type of token")
 	}
