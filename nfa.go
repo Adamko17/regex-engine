@@ -50,6 +50,8 @@ func tokenToNfa(t *token) (*state, *state) {
 
 	switch t.tokenType {
 	case literal:
+		ch := t.value.(uint8)
+		start.transitions[ch] = []*state{end}
 	case or:
 	case bracket:
 	case group, groupUncaptured:
